@@ -21,6 +21,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/company', companyRouter);
-app.use('/staff',staffRouter);
+app.use('/staff',staffRouter)
 
 module.exports = app;

@@ -13,5 +13,5 @@ const shopSchema = new Schema({
     //updatedAt: {type:Date, default:Date.now},
 },{collection:"shops",timestamps:true})
 
-const shop = mongoose.model('shops',shopSchema);
+const shop = mongoose.model('Shop',shopSchema);
 module.exports = shop;

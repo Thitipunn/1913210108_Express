@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var companyRouter = require('./routes/company');
 var staffRouter = require('./routes/staff');
+var shopRouter = require('./routes/shop');
 
 var app = express();
 mongoose.connect('mongodb+srv://thitipun:BE0be@1913210108-be.ixno0fz.mongodb.net/restfullapi?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true})
@@ -22,5 +23,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/company', companyRouter);
 app.use('/staff',staffRouter)
+app.use('/shop',shopRouter)
 
 module.exports = app;

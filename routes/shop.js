@@ -7,4 +7,6 @@ router.get('/', shopController.Shop);
 
 router.get('/menu', menuController.menu);
 
+router.get('/:id', shopController.findId);
+
 module.exports = router;

@@ -19,16 +19,16 @@ exports.Show = async (req, res, next) => {
         });
     
         if (!company) {
-          throw new Error("Company not found");
+          const error = new Error("ไม่พบข้อมูลบริษัท")
+          error.statusCode = 400
+          throw error
         } else {
           res.status(200).json({
             data: company,
           });
         }
       } catch (error) {
-        res.status(400).json({
-          message: "Error Message " + error.message,
-        });
+        next(error)
       }
 }
 
@@ -56,16 +56,16 @@ exports.insert = async (req, res, next) => {
       });
   
       if (company.deletedCount === 0) {
-        throw new Error("ไม่พบข้อมูลบริษัท");
+        const error = new Error("ไม่พบข้อมูลบริษัท")
+        error.statusCode = 400
+        throw error
       } else {
         res.status(200).json({
           message: "ลบข้อมูลเรียบร้อยแล้ว",
         });
       }
     } catch (error) {
-      res.status(400).json({
-        message: "Error found " + error.message,
-      });
+      next(error)
     }
   };
 
@@ -83,8 +83,6 @@ exports.insert = async (req, res, next) => {
           message: "Data has been updated",
         });
     } catch (error) {
-        res.status(400).json({
-            message: "Error found " + error.message,
-          });
+      next(error)
     }
       };

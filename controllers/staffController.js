@@ -36,16 +36,17 @@ exports.Show = async (req, res, next) => {
     });
 
     if (!staff) {
-      throw new Error("Staff not found");
+      const error = new Error("ไม่พบพนักงาน")
+      error.statusCode = 400
+      throw error
+      
     } else {
       res.status(200).json({
         data: staff,
       });
     }
   } catch (error) {
-    res.status(400).json({
-      message: "Error Message" + error.message,
-    });
+    next(error)
   }
 };
 
@@ -58,16 +59,16 @@ exports.destroy = async (req, res, next) => {
     });
 
     if (staff.deletedCount === 0) {
-      throw new Error("ไม่พบข้อมูลผู้ใช้งาน");
+      const error = new Error("ไม่พบข้อมูลพนักงาน")
+      error.statusCode = 400
+      throw error
     } else {
       res.status(200).json({
         message: "ลบข้อมูลเรียบร้อยแล้ว",
       });
     }
   } catch (error) {
-    res.status(400).json({
-      message: "Error found " + error.message,
-    });
+    next(error)
   }
 };
 
@@ -117,9 +118,7 @@ try {
       message: "Data has been updated",
     });
 } catch (error) {
-    res.status(400).json({
-        message: "Error found " + error.message,
-      });
+    next(error)
 }
   };
 

@@ -107,10 +107,16 @@ try {
      })
     */
 
-    const staff = await Staff.updateOne({_id:id},{
+    const staff = await Staff.findOneAndUpdate({_id:id},{
         name : name,
-        salary : salary
+        salary : salary,
     })
+
+    if(!staff){
+      const error = new Error("ไม่พบพนักงาน")
+      error.statusCode = 400
+      throw error
+    }
 
     console.log(staff);
 

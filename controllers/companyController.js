@@ -78,6 +78,11 @@ exports.insert = async (req, res, next) => {
             name : name,
             province:province
          })
+         if(!company){
+          const error = new Error("ไม่พบข้อมูลบริษัท")
+          error.statusCode = 400
+          throw error
+         }
     
         res.status(200).json({
           message: "Data has been updated",

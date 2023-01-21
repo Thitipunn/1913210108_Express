@@ -7,6 +7,7 @@ const writeFileAsync = promisify(fs.writeFile)
 const shop = require("../models/shop");
 const Shop = require("../models/shop");
 const config = require("../config/index");
+const { validationResult } = require('express-validator');
 
 exports.Shop = async (req, res, next) => {
   const shops = await Shop.find().select('name photo location').sort({_id:-1});
@@ -38,19 +39,33 @@ exports.findId = async (req, res, next) => {
 };
 
 exports.insert = async (req, res, next) => {
-  const { name, location, photo } = req.body;
 
-  let shop = new Shop({
-    name: name,
-    location: location,
-    photo: await saveImageToDisk(photo)
-  });
+  try{
+    const { name, location, photo } = req.body;
 
-  await shop.save();
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("ข้อมูลที่ได้รับมาไม่ถูกต้อง")
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
 
-  res.status(200).json({
-    message: "เพิ่มข้อมูลร้านอาหารเรียบร้อยแล้ว",
-  });
+    let shop = new Shop({
+      name: name,
+      location: location,
+      photo: await saveImageToDisk(photo)
+    });
+  
+    await shop.save();
+  
+    res.status(200).json({
+      message: "เพิ่มข้อมูลร้านอาหารเรียบร้อยแล้ว",
+    });
+  }
+  catch(error){
+    next(error)
+  }
 };
 
 async function saveImageToDisk(baseImage) {

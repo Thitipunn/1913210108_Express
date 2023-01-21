@@ -8,6 +8,7 @@ const { deleteOne } = require("../models/company");
 const staff = require("../models/staff");
 const Staff = require("../models/staff");
 const config = require("../config/index");
+const { validationResult } = require('express-validator');
 
 exports.Staff = async (req, res, next) => {
   const staff = await Staff.find().sort({ _id: -1 });
@@ -73,7 +74,16 @@ exports.destroy = async (req, res, next) => {
 };
 
 exports.insert = async (req, res, next) => {
-  const { name, salary, photo } = req.body;
+  try{
+    const { name, salary, photo } = req.body;
+
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("ข้อมูลที่ได้รับมาไม่ถูกต้อง")
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
 
   let staff = new Staff({
     name: name,
@@ -86,6 +96,10 @@ exports.insert = async (req, res, next) => {
   res.status(200).json({
     message: "Data has been added",
   });
+  }
+  catch(error){
+    next(error)
+  }
 };
 
 exports.update = async (req, res, next) => {

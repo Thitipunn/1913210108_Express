@@ -1,5 +1,9 @@
 const User = require("../models/user");
 const { validationResult } = require('express-validator');
+const { findOne } = require("../models/user");
+const user = require("../models/user");
+const jwt = require('jsonwebtoken');
+const config = require("../config/index");
 
 exports.index = (req, res, next) => {
   //res.send('Erorr');
@@ -51,3 +55,50 @@ exports.register = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.login = async (req,res,next) => {
+  try{
+    const{ email,password } = req.body
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("ข้อมูลที่ได้รับมาไม่ถูกต้อง")
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
+
+    //check email is exist
+    const user = await User.findOne({email:email})
+    if(!user){
+      const error = new Error("ไม่พบผู้ใช้งาน")
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const isValid = await user.checkPassword(password)
+    if(!isValid){
+      const error = new Error("รหัสผ่านไม่ถูกต้อง")
+      error.statusCode = 401
+      throw error;
+    }
+
+    //login token
+    const token = await jwt.sign({
+      id:user._id,
+      role:user.role,
+    },config.SECRETKEY,
+    {expiresIn:"5 days"})
+
+    const expire_in = jwt.decode(token);
+
+    res.status(200).json({
+      access_token:token,
+      expire_in:expire_in.exp,
+      token_type:'Bearer',
+    });
+  }
+  catch(error){
+    next(error)
+  }
+}

@@ -3,6 +3,7 @@ const path = require('path');
 const uuidv4 = require('uuid');
 const { promisify } = require('util')
 const writeFileAsync = promisify(fs.writeFile)
+const passportJwt = require('../middleware/passportJWT')
 
 const { deleteOne } = require("../models/company");
 const staff = require("../models/staff");
